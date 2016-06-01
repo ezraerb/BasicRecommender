@@ -1,0 +1,60 @@
+This is a basic recommendation engine, written mainly as an exercise in learning
+recommender algorithms. It takes a CSV file of reviews with the format specified
+below, the maximum recommendations, and a list of businesses for which the
+user would like recomendations. The recommendations are calculated by Pearson's
+corrolation coefficient over common reviewers of pairs of businesses. Note that
+if a buiness has multiple locations, a different list is printed per location.
+
+   Copyright (C) 2016   Ezra Erb
+
+This program is free software: you can redistribute it and/or modify it under 
+the terms of the GNU General Public License version 3 as published by the Free 
+Software Foundation.
+
+This program is distributed in the hope that it will be useful, but WITHOUT 
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with 
+this program.  If not, see <http://www.gnu.org/licenses/>.
+
+I'd appreciate a note if you find this program useful or make updates. Please 
+contact me through LinkedIn (my profile also has a link to the code depository)
+
+This program was written for Python 2.7, but should work under Python 3 with 
+minimal changes.
+
+
+It takes a minimum of three arguments, a file of rating data as described 
+below, the maximum number of recommendations per business to generate, and the
+businesses for which to generate recommendations. If the file can not be opened
+an error is issued.
+
+The data file must be csv with columns in this order:
+'user_id', 'business_id', 'date', 'review_id', 'stars', 'usefulvotes_review', 
+'user_name', 'categories', 'biz_name', 'latitude', 'longitude', 'business_avg',
+'business_review_count', 'user_avg', 'user_review_count'. 
+The first line must be a column header with the names above. Only the following
+columns are actually processed: 'user_id', 'business_id', 'stars', 'user_name',
+'biz_name', 'business_avg', 'user_avg'.
+The user_id, user_name, and user_avg values much match in every row for a given
+user_id value. The business_id, biz_name, and business_avg values must match in
+every row for a given business_id value. Mismatches are assumed to indicate a
+corrupted file.
+
+Once the data is read in, reviews are filtered to remove the least active
+reviewers and least reviewed businesses. Recommendations based on a small 
+number of reviews are known to have low confidence levels. The filtering also
+creates a more tractable data set. Currently, the filter levels are hard-coded.
+
+Ratings are then nomalized to remove overall reviewer bias by adjusting each by
+the reviewer's overall review average. Recommendations are then based on rating
+similarity of pairs of businesses using the classic Pearson's corrolation 
+coefficient algorithm over common reviewers. Businesses with the highest 
+similarities to the specified business are chosen as recommendations.
+
+This process is subject to data inconsistencies in several ways. A given 
+business can be listed under multiple names. A given name can also be used 
+for multiple locations. This algorithm makes no attempt to handle the former.
+For the latter, it processes data by business_id which is unique per location,
+and lists recommdations seperately for each location.
